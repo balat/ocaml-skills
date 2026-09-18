@@ -1,0 +1,10 @@
+{
+  "name": "lwt",
+  "version": "0.1.0",
+  "description": "Skill for writing and reviewing code that uses the Lwt cooperative concurrency library",
+  "author": {
+    "name": "Vincent Balat",
+    "email": "vincent.balat@tarides.com"
+  },
+  "license": "ISC"
+}

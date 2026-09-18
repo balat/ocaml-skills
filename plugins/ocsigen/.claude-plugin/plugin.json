@@ -1,0 +1,10 @@
+{
+  "name": "ocsigen",
+  "version": "0.1.0",
+  "description": "Skills for building multi-tier web and mobile applications with Eliom, Ocsigen Start and Ocsigen Toolkit, and for contributing to the Ocsigen framework",
+  "author": {
+    "name": "Vincent Balat",
+    "email": "vincent.balat@tarides.com"
+  },
+  "license": "ISC"
+}

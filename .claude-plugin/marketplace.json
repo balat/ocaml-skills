@@ -1,0 +1,39 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "ocaml-skills",
+  "owner": {
+    "name": "Vincent Balat",
+    "email": "vincent.balat@tarides.com"
+  },
+  "metadata": {
+    "description": "Claude Code skills for OCaml: the Ocsigen web and mobile framework (Eliom, Ocsigen Start, Ocsigen Toolkit, TyXML) and the Lwt concurrency library",
+    "version": "0.1.0",
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "ocsigen",
+      "source": "./plugins/ocsigen",
+      "description": "Skills for building multi-tier web and mobile applications with Eliom, Ocsigen Start and Ocsigen Toolkit, and for contributing to the Ocsigen framework",
+      "version": "0.1.0",
+      "author": {
+        "name": "Vincent Balat",
+        "email": "vincent.balat@tarides.com"
+      },
+      "category": "development",
+      "homepage": "https://github.com/balat/ocaml-skills"
+    },
+    {
+      "name": "lwt",
+      "source": "./plugins/lwt",
+      "description": "Skill for writing and reviewing code that uses the Lwt cooperative concurrency library",
+      "version": "0.1.0",
+      "author": {
+        "name": "Vincent Balat",
+        "email": "vincent.balat@tarides.com"
+      },
+      "category": "development",
+      "homepage": "https://github.com/balat/ocaml-skills"
+    }
+  ]
+}
