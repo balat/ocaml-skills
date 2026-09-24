@@ -1,5 +1,8 @@
 # Database schema management with Ocsigen Start and PG'OCaml
 
+A recommended approach, not a requirement of Ocsigen Start: it keeps one replayable file
+for the application schema, which suits the build-time checking of `[%pgsql]` queries.
+
 ## Contents
 
 - Two schema files

@@ -90,7 +90,8 @@ toolkit inputs.
 - Wrap queries in `full_transaction_block` (from `Os.Db`, which the template's db files open).
 - Never modify the `ocsigen_start.*` tables: they must stay upgradable. Add tables and
   reference `ocsigen_start.users.userid`.
-- Keep the application's schema in one idempotent file replayed on every database.
+- Recommended schema management, which fits the build-time checking of `[%pgsql]`: one
+  idempotent `update.sql` replayed on every database.
   `references/database.md` gives the layout, the guards and the Makefile targets.
 
 ## Internationalisation
@@ -106,10 +107,12 @@ toolkit inputs.
 
 - Stylesheets are SASS in `sass/`, compiled by `make css`. No inline styles in `.eliom`
   files.
-- Class names follow BEM. Prefix project classes with the project short name; `ot-` and
-  `os-` are reserved for Ocsigen Toolkit and Ocsigen Start.
-- Mobile-first: relative units, media queries, consistent spacing through CSS variables,
-  strict alignment within the page.
+- Prefix project classes with the project short name; `ot-` and `os-` are reserved for
+  Ocsigen Toolkit and Ocsigen Start. Pick one class-naming convention and keep it across the
+  project; BEM combines well with these prefixes.
+- Recommended for applications that also target mobile: a mobile-first stylesheet (relative
+  units, media queries), consistent spacing through CSS variables, strict alignment within
+  the page.
 
 ## Build and run
 

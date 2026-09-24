@@ -19,10 +19,10 @@ or perform I/O, one returning `'a` does not. Keep that signal honest: do not cal
 
 ## Binding syntax
 
-Pick one style per project and use it everywhere; a review finding is a file that mixes
-`let%lwt`, `let*`, `>>=` and `Lwt.bind`.
+Two styles are in common use; pick one per project and use it everywhere. A file that
+mixes `let%lwt`, `let*`, `>>=` and `Lwt.bind` is a review finding.
 
-Default, with the `lwt_ppx` preprocessor (`(preprocess (pps lwt_ppx))` in `dune`):
+With the `lwt_ppx` preprocessor (`(preprocess (pps lwt_ppx))` in `dune`):
 
 ```ocaml
 let%lwt user = fetch_user id in
@@ -33,8 +33,17 @@ Lwt.return (user, perms)
 `match%lwt`, `if%lwt`, `try%lwt ... with`, `for%lwt`, `while%lwt` and `[%lwt.finally]` cover
 the other control structures.
 
-Alternative without ppx: `let open Lwt.Syntax in` then `let*` (bind), `let+` (map), `and*`,
-`and+`. `Lwt_result.Syntax` does the same for `('a, 'e) result Lwt.t`.
+With the standard binding operators, no preprocessor:
+
+```ocaml
+let open Lwt.Syntax in
+let* user = fetch_user id in
+let+ perms = fetch_permissions user in
+(user, perms)
+```
+
+`let*` binds, `let+` maps, and `and*` or `and+` start two promises together (`Lwt.both`).
+`Lwt_result.Syntax` provides the same operators for `('a, 'e) result Lwt.t`.
 
 Return with `Lwt.return x`, or the allocation-free constants `Lwt.return_unit`,
 `Lwt.return_none`, `Lwt.return_nil`, `Lwt.return_true`, `Lwt.return_false`, and
