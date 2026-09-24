@@ -31,7 +31,7 @@ content is `Svg.F.txt`.
 
 | Attribute | Type | Example |
 |---|---|---|
-| `a_x`, `a_y`, `a_width`, `a_height`, `a_rx`, `a_ry`, `a_r`, `a_cx`, `a_cy`, `a_x1`, `a_y2` | length: `float * Svg_types.Unit.length option` | `a_x (13., None)`, `a_width (50., Some `Percent)` |
+| `a_x`, `a_y`, `a_width`, `a_height`, `a_rx`, `a_ry`, `a_r`, `a_cx`, `a_cy`, `a_x1`, `a_y2` | `Svg_types.Unit.length`, a float with an optional unit (`float * [`Px | `Percent | `Em | ...] option`) | `a_x (13., None)`, `a_width (50., Some `Percent)` |
 | `a_x_list`, `a_y_list` (on `text`, `tspan`) | length list | `a_x_list [(10., None)]` |
 | `a_transform` | `Svg_types.transform list` | `a_transform [`Translate (x, Some y); `Scale (k, None)]`; rotation `` `Rotate ((45., None), Some (cx, cy)) `` |
 | `a_viewBox` | `float * float * float * float` | `a_viewBox (0., 0., w, h)` |
@@ -45,7 +45,7 @@ content is `Svg.F.txt`.
 
 ## Replacing and updating
 
-- Full redraw: keep a `D` root and call `Eliom.Content.Svg.Manip.replaceChildren root
+- Full redraw: keep the handle of a `D` root node and call `Eliom.Content.Svg.Manip.replaceChildren root
   [new_subtree]` (or `Html.Manip.replaceChildren` on the HTML `svg` element).
 - Single attribute: keep the `D` handle and set that attribute on its DOM node,
   `(Svg.To_dom.of_element node)##setAttribute (Js.string "transform") (Js.string v)`, or

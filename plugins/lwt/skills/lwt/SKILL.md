@@ -6,7 +6,8 @@ license: ISC
 
 # Lwt
 
-Lwt is a cooperative concurrency library. A value of type `'a Lwt.t` is a promise: pending,
+Lwt (<https://ocsigen.org/lwt>) is a cooperative concurrency library. A value of type
+`'a Lwt.t` is a promise: pending,
 fulfilled with an `'a`, or rejected with an exception. A single event loop runs everything;
 a computation yields only when it waits on a pending promise. Two consequences drive most of
 the rules below: a blocking call freezes the whole program, and a rejected promise nobody
@@ -59,7 +60,7 @@ Return with `Lwt.return x`, or the allocation-free constants `Lwt.return_unit`,
   errors and cancellation.
 - `Lwt.try_bind (fun () -> p) on_success on_failure` handles both outcomes;
   `Lwt.finalize (fun () -> p) cleanup` runs `cleanup` whatever happens.
-- Fire-and-forget: `Lwt.async (fun () -> work ())`. If `work` fails, the exception goes to
+- Fire-and-forget: `Lwt.async (fun () -> work ())`. If `work` fails, the exception is passed to
   `!Lwt.async_exception_hook`, which by default prints it and terminates the program. Set
   the hook once at startup (log through `Logs`, decide whether to exit). `Lwt.dont_wait f
   handler` gives a per-call handler. Never `ignore (p : _ Lwt.t)`: the promise still runs,
@@ -118,8 +119,9 @@ The same API runs in the browser (`js_of_ocaml-lwt`). `Lwt_js.sleep` replaces `L
 `Lwt_js_events` binds DOM events (`clicks`, `changes`, ...; the `s` suffix loops over
 repeated events, the singular form waits for one). There is no `Lwt_main.run`: the browser
 drives the loop, and an unhandled rejection reaches `Lwt.async_exception_hook`, which logs to
-the console. An exception escaping the body of a `Lwt_js_events.clicks` loop terminates the
-loop, so catch inside the body.
+the console. The `Lwt_js_events.clicks` loop catches an exception escaping its body, logs it
+to the console and carries on, so the user sees nothing: catch inside the body and show a
+message.
 
 ## Review checklist
 

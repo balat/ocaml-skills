@@ -1,17 +1,18 @@
 ---
 name: ocsigen-start
-description: "Building on the Ocsigen Start template and library: users, groups and sessions, Os.Current_user and authorization predicates, session-start client caches, Os.Notif server push, Os.Msg, Ocsigen Toolkit widgets (Ot.Spinner, Ot.Popup, Ot.Drawer, Ot.Carousel, Ot.Nodeready), PG'OCaml [%pgsql] queries and idempotent schema updates, ocsigen-i18n, SASS with BEM and ot-/os- prefixes, Makefile targets (make test.byte, db-schema, db-update, css). Use in a project generated from os_template or when code uses Os., Ot., [%pgsql] or i18n."
+description: "Building on the Ocsigen Start template and library: users, groups and sessions, Os.Current_user and authorization checks (allow, deny, predicate), session-start client caches, Os.Notif server push, Os.Msg, Ocsigen Toolkit widgets (Ot.Spinner, Ot.Popup, Ot.Drawer, Ot.Carousel, Ot.Nodeready), PG'OCaml [%pgsql] queries and idempotent schema updates, ocsigen-i18n, SASS with BEM and ot-/os- prefixes, Makefile targets (make test.byte, db-schema, db-update, css). Use in a project generated from the Ocsigen Start template or when code uses Os., Ot., [%pgsql] or i18n."
 license: ISC
 ---
 
 # Ocsigen Start applications
 
-Ocsigen Start (`Os`) provides users, sessions, groups, notifications, email and a project
-template with a demo of each feature and of the Ocsigen Toolkit widgets (`Ot`). A new
-application starts with `eliom-distillery -name myapp -template os`. Keep the template's
-structure; the `demo_*.eliom` files are working examples of each feature and can be removed
-once read. Module names are those of the development version; released versions use
-`Os_session`, `Ot_spinner` (mapping in the `eliom-client-server` skill's references).
+Ocsigen Start (`Os`, <https://ocsigen.org/ocsigen-start>) provides users, sessions, groups,
+notifications, email and a project template with a demo of each feature and of the Ocsigen
+Toolkit widgets (`Ot`, <https://ocsigen.org/ocsigen-toolkit>). A new application starts with
+`eliom-distillery -name myapp -template os` (`os.pgocaml` with Eliom 12 and earlier). Keep
+the template's structure; the `demo_*.eliom` files are working examples of each feature and
+can be removed once read. Module names are those of Eliom 13 (in development); earlier
+releases use `Os_session`, `Ot_spinner` (mapping in the `eliom-client-server` skill).
 
 ## Template structure
 
@@ -20,19 +21,21 @@ wrappers), `myapp_container` (layout), `myapp_drawer`, `myapp_config`, `myapp_la
 `myapp_settings`, `myapp_mobile`, `*_db.ml` (database access), `sass/`, `static/`,
 `assets/` (images, translation files), `mobile/` (Cordova), `myapp.sql` (Ocsigen Start
 schema), `Makefile.options` (project settings, committed) and `Makefile.local` (machine
-settings, not committed). Feature files follow the layout described in `eliom-architecture`.
+settings, kept out of git). Feature files follow the layout described in
+`eliom-architecture`.
 
 ## Users, sessions, authorization
 
 - Users are rows of `ocsigen_start.users`, groups rows of `ocsigen_start.groups`
   (`Os.User`, `Os.Group`). Model roles as groups.
-- Call the connected user's id `myid` and other users' ids `userid`. Never send `myid` from
-  the client: the server obtains it with `Os.Current_user.get_current_userid ()` inside a
-  connected handler or RPC.
+- The template calls the connected user's id `myid` and other users' ids `userid`; keep that
+  convention. Never send `myid` from the client: the server obtains it with
+  `Os.Current_user.get_current_userid ()` inside a connected handler or RPC.
 - Wrap page handlers with `Os.Page.connected_page` (rejects anonymous users) or
-  `Os.Page.Opt.connected_page` (passes `myid_o : User.id option`), and server functions with
-  `Os.Session.connected_rpc` or `Os.Session.Opt.connected_rpc`. They take `?allow` and
-  `?deny` group lists and a `?predicate`.
+  `Os.Page.Opt.connected_page` (passes `myid_o : Os.Types.User.id option`). Both take
+  `?allow` and `?deny` group lists, a `?predicate` and a `?fallback`. Wrap server functions
+  with `Os.Session.connected_rpc` or `Os.Session.Opt.connected_rpc`, which take `?allow`,
+  `?deny` and `?deny_fun`.
 - `?allow`, `?deny` and `?predicate` are real authorization checks when the page is rendered
   on the server. On client-side navigation the same checks run in the browser and a modified
   client can bypass them. Treat their client-side outcome as user experience (do not show a
@@ -60,10 +63,12 @@ settings, not committed). Feature files follow the layout described in `eliom-ar
 
 ## Notifications, messages, email
 
-- Server to client push: `module Notif = Os.Notif.Make_Simple (struct type key = ... type notification = ... [@@deriving json] end)`.
+- Server to client push: `module Notif = Os.Notif.Make_Simple (struct type key = ... type notification = ... end)`.
   On the server, `Notif.listen key` subscribes the current client process and
-  `Notif.notify key notification` pushes to every subscriber; on the client,
-  `Notif.client_ev ()` is a React event of `key * notification`. Demo: `demo_notif.eliom`.
+  `Notif.notify key notification` pushes to every subscriber. `Notif.client_ev ()` builds,
+  on the server, a downward React event of `key * notification`; inject it into client code
+  with `~%` (typically from `Os.Session.on_start_process`) and map it there like any
+  `React.E.t`. Demo: `demo_notif.eliom`.
 - Feedback to the user: `Os.Msg.msg ~level:`Err "..."`, callable from client or server code.
 - Email: `Os.Email`. Mobile push: `Os.Fcm_notif`.
 
@@ -93,8 +98,9 @@ toolkit inputs.
 - No user-facing string literal in `.eliom` files. With ocsigen-i18n, `[%i18n key]` yields
   TyXML nodes and `[%i18n S.key]` a string. Keys and translations live in
   `assets/myapp_i18n.tsv`, one column per language; group keys by feature or page.
-- Translations follow each language's typography (in French, a non-breaking space before
-  `:`, `;`, `?` and `!`). Demo: `demo_i18n.eliom`.
+- Translations follow each language's typography (for example the non-breaking space French
+  puts before `:`, `;`, `?` and `!`, or German capitalisation of nouns). Demo:
+  `demo_i18n.eliom`.
 
 ## Styling
 
@@ -102,7 +108,8 @@ toolkit inputs.
   files.
 - Class names follow BEM. Prefix project classes with the project short name; `ot-` and
   `os-` are reserved for Ocsigen Toolkit and Ocsigen Start.
-- Mobile-first: relative units, media queries, consistent spacing through CSS variables.
+- Mobile-first: relative units, media queries, consistent spacing through CSS variables,
+  strict alignment within the page.
 
 ## Build and run
 

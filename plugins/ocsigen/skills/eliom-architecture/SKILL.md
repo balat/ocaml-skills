@@ -1,6 +1,6 @@
 ---
 name: eliom-architecture
-description: "Structuring multi-tier Eliom/Ocsigen web and mobile applications: shared, server and client sections, server-side first render then client-side navigation, service design (GET vs POST, registration on both sides, server-only services and ~xhr:false links), RPCs with ocsigen-ppx-rpc, Eliom references and scopes, feature file layout (foo_services, foo_handlers, foo_db). Use when creating or reorganising an Eliom app, adding a page, service or feature module, deciding which tier code runs on, or choosing where state lives."
+description: "Structuring multi-tier Eliom/Ocsigen web and mobile applications: shared, server and client sections, server-side first render then client-side navigation, service design (GET vs POST, registration on both tiers, server-only services and ~xhr:false links), RPCs with ocsigen-ppx-rpc, Eliom references and scopes, feature file layout (foo_services, foo_handlers, foo_db). Use when creating or reorganising an Eliom app, adding a page, service or feature module, deciding which tier code runs on, or choosing where state lives."
 license: ISC
 ---
 
@@ -8,11 +8,14 @@ license: ISC
 
 Eliom compiles one OCaml program into a server (native or bytecode) and a client (JavaScript
 or WebAssembly through js_of_ocaml or wasm_of_ocaml). One source describes both tiers; ppx
-section annotations decide where each definition lives.
+section annotations decide where each definition lives. Documentation:
+<https://ocsigen.org/eliom> (manual and API) and the tutorial
+<https://ocsigen.org/tuto/latest/manual/basics>.
 
-Module names below are those of the current development version (`Eliom.Service`,
-`Eliom.Content`). Released versions use `Eliom_service`, `Eliom_content`, and so on: see
-`references/module-names.md` in the `eliom-client-server` skill.
+Module names below are those of Eliom 13 (in development): `Eliom.Service`, `Eliom.Content`.
+Eliom 12 and earlier, that is every opam release to date, use `Eliom_service`,
+`Eliom_content`, and so on. `../eliom-client-server/references/module-names.md` gives the
+mapping and how to tell which naming a project uses.
 
 ## Rendering model
 
@@ -23,7 +26,8 @@ Module names below are those of the current development version (`Eliom.Service`
   The application has the responsiveness of a single-page app while keeping URLs, links,
   forms and the back button.
 - Data the client needs comes through RPCs. Render blocks that wait for data inside
-  `Ot.Spinner` (Ocsigen Toolkit) so the rest of the page appears at once.
+  `Ot.Spinner` (Ocsigen Toolkit) so the rest of the page appears at once instead of waiting
+  for the slowest call.
 - Typical targets: a web app in browsers (server render first, client afterwards) and a
   mobile app in a Cordova webview (client rendering only, same server). Design responsive
   layouts from the start when both are targets.
@@ -39,12 +43,12 @@ on either tier. Reserve single-tier sections for what genuinely belongs there:
 | Client only | DOM manipulation, browser and device APIs, UI-only behaviour | `let%client` |
 | Both | page rendering, widgets, page service registration | `let%shared` |
 
-Register page services on both sides (`let%shared () = App.register ~service ...`) so
-in-app navigation renders them on the client. Register on the server only when the service
-is not part of the client program: REST or JSON endpoints, downloads, printable pages,
-services called by third parties. Link to such a service with `~xhr:false`
-(`Eliom.Content.Html.D.a ~service ~xhr:false`) so the browser performs a real request instead
-of a client-side transition.
+Register page services on both tiers, `let%shared () = App.register ~service ...`, where
+`App` is the module the application obtains from `Eliom.Registration.App`; in-app navigation
+then renders them on the client. Register on the server only when the service is not part
+of the client program: REST or JSON endpoints, downloads, printable pages, services called by
+third parties. Link to such a service with `~xhr:false` (`Eliom.Content.Html.D.a ~service
+~xhr:false`) so the browser performs a real request instead of a client-side transition.
 
 Client-server reactive programming (`Eliom.Shared.React`) is available; use it where it
 makes the code simpler than rendering plus RPCs, not by default.
@@ -70,15 +74,23 @@ This is the convention of the Ocsigen Start template; keep it consistent across 
 ## Services
 
 - Bookmarkable pages are GET services:
-  `Eliom.Service.create ~path:(Eliom.Service.Path ["users"]) ~meth:(Eliom.Service.Get Eliom.Parameter.(int64 "id")) ()`.
+
+  ```ocaml
+  let%server user_page =
+    Eliom.Service.create
+      ~path:(Eliom.Service.Path ["users"])
+      ~meth:(Eliom.Service.Get Eliom.Parameter.(int64 "id"))
+      ()
+  ```
+
 - Actions with effects (create, update, delete) are POST services, typically registered with
   `Eliom.Registration.Action` or `Eliom.Registration.Redirection`.
 - Parameters are typed (`Eliom.Parameter.(int "page" ** string "q")`, `int64`, `suffix`).
   Links and forms are checked against them at compile time (see `eliom-typed-markup`).
-- Remote calls: `let%rpc f (x : t) : u Lwt.t = ...` with `ocsigen-ppx-rpc`. Parameter and
-  result annotations are mandatory; custom types crossing the wire carry `[@@deriving json]`.
-- Multi-step flows can use services attached to a session or client process (created with a
-  `~scope`) so that a stale URL or the back button cannot replay a step out of context.
+- Remote calls: `let%rpc f (x : t) : u Lwt.t = ...` with `ocsigen-ppx-rpc`. Typing and
+  serialisation rules are in the `eliom-client-server` skill.
+- Multi-step flows can register services with a `~scope` (session or client process) so
+  that a stale URL or the back button cannot replay a step out of context.
 
 ## State
 
@@ -89,12 +101,11 @@ Choose the narrowest scope and the right store:
   (whole server), `site_scope` (one application), `default_group_scope` (a group of sessions,
   typically one user), `default_session_scope` (one browser), `default_process_scope` (one
   tab, or one mobile app instance).
-- Ocsipersist for application data that must survive restarts but has no other reader
-  (caches, counters).
+- Ocsipersist (Ocsigen's key-value store, with SQLite, PostgreSQL and DBM backends) for
+  application data that must survive restarts but has no other reader (caches, counters).
 - The database (PostgreSQL through PG'OCaml in Ocsigen Start) for durable data that other
   tools may query.
-- Ocsigen Start adds scopes that survive login and logout
-  (`Os.Session.user_indep_session_scope`, `user_indep_process_scope`).
+- Ocsigen Start adds scopes that survive login and logout (see the `ocsigen-start` skill).
 
 ## Trust boundary
 
@@ -106,9 +117,8 @@ experience. Never accept the current user's id from the client: the server knows
 ## Errors and performance
 
 - Handle HTTP errors with Eliom's error handler (`Eliom.Registration.set_exn_handler`,
-  matching `Eliom.Common.Eliom_404`, `Eliom_403`); do not let exceptions escape service
-  handlers.
+  matching `Eliom.Common.Eliom_404` and `Eliom.Common.Eliom_Wrong_parameter`); do not let
+  exceptions escape service handlers.
 - Do not sequence independent remote calls (RPCs, queries): start them together and wait
-  for both (`Lwt.both`, `Lwt_list.map_p`; see the `lwt` skill).
-- On the client, wrap blocks that need server data in `Ot.Spinner` so page rendering is not
-  delayed by the slowest call.
+  for both (`Lwt.both`, `Lwt_list.map_p`; see the `lwt` skill, plugin `lwt` of this
+  marketplace).

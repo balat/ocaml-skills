@@ -41,7 +41,7 @@ Ocsigen Start template (`os_template`).
 | `Ot.Color_picker` | colour picker | |
 | `Ot.Range` | range selection | |
 | `Ot.Toggle` | binary toggle switch | |
-| `Ot.Form` | reactive form inputs (`Ot.Form.input`, ...) | `demo_forms` |
+| `Ot.Form` | reactive form inputs: `reactive_input`, `debounced_input`, `checkbox`, `radio_buttons`, `disableable_button`, ... | `demo_forms` |
 | `Ot.Buttons` | dropdown buttons | |
 
 ## Gestures and motion
@@ -60,6 +60,3 @@ Ocsigen Start template (`os_template`).
 | `Ot.Lib` | `onloads`, `onresizes`, `window_scrolls`, `click_outside`, `in_ancestors` and similar helpers |
 | `Ot.Style` | interface to `getComputedStyle` |
 | `Ot.Icons` | `<i>` icon elements styled by the toolkit's CSS |
-
-When a widget lacks a generic feature, add it to the toolkit rather than working around it in
-the application (see the `ocsigen-contributing` skill).
