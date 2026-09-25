@@ -35,17 +35,11 @@ does the same for SVG. When a lower-level API is needed (measuring, focus, `setA
 
 ## Links and forms are typed
 
-- Links: `D.a ~service:Foo_services.user_page [txt "Profile"] userid`. The parameter is
-  checked against the service definition, so changing a service's parameters is a compile
-  error at every link. For server-only services, add `~xhr:false` (see `eliom-architecture`).
-- Forms take their field names from the service's parameters:
-
-  ```ocaml
-  Form.post_form ~service:Foo_services.rename (fun (id, name) ->
-    [ Form.input ~input_type:`Hidden ~name:id ~value:item_id Form.int64
-    ; Form.input ~input_type:`Text ~name Form.string
-    ; Form.button_no_value ~button_type:`Submit [txt "Rename"] ]) ()
-  ```
+Links (`D.a ~service:Foo_services.user_page [txt "Profile"] userid`) and forms
+(`Form.get_form`, `Form.post_form`, `Form.input ~input_type ~name Form.string`) are checked
+against the service they target; the `eliom-server-side` skill covers them. In a
+client-server application, build with `D` the forms and inputs that client code reads, and
+add `~xhr:false` to links to server-only services (`eliom-architecture`).
 
 ## Markup is never built as strings
 

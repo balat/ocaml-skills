@@ -1,6 +1,6 @@
 ---
 name: eliom-architecture
-description: "Structuring multi-tier Eliom/Ocsigen web and mobile applications: shared, server and client sections, server-side first render then client-side navigation, service design (GET vs POST, registration on both tiers, server-only services and ~xhr:false links), RPCs with ocsigen-ppx-rpc, Eliom references and scopes, feature file layout (foo_services, foo_handlers, foo_db). Use when creating or reorganising an Eliom app, adding a page, service or feature module, deciding which tier code runs on, or choosing where state lives."
+description: "Structuring multi-tier Eliom/Ocsigen web and mobile applications: shared, server and client sections, server-side first render then client-side navigation, service registration on both tiers, server-only services and ~xhr:false links, RPCs with ocsigen-ppx-rpc, state and scopes across tiers, feature file layout (foo_services, foo_handlers, foo_db). Use when creating or reorganising an Eliom app, adding a page, service or feature module, deciding which tier code runs on, or choosing where state lives."
 license: ISC
 ---
 
@@ -11,6 +11,10 @@ or WebAssembly through js_of_ocaml or wasm_of_ocaml). One source describes both 
 section annotations decide where each definition lives. Documentation:
 <https://ocsigen.org/eliom> (manual and API) and the tutorial
 <https://ocsigen.org/tuto/latest/manual/basics>.
+
+Services, typed parameters, registration modules, links, forms, Eliom references and
+scopes are the same as in a server-side site: the `eliom-server-side` skill is the
+reference for them. This skill covers what a multi-tier application adds.
 
 Module names below are those of Eliom 13: `Eliom.Service`, `Eliom.Content`.
 Eliom 12 and earlier use `Eliom_service`,
@@ -71,41 +75,28 @@ Keep services and handlers in separate files: links and forms everywhere refer t
 while handlers pull in the whole feature. Split a role file further when a feature grows.
 This is the convention of the Ocsigen Start template; keep it consistent across the project.
 
-## Services
+## Services and remote calls
 
-- Bookmarkable pages are GET services:
+- Page services are ordinary GET services (`eliom-server-side`), registered with
+  `App.register` on both tiers. Effectful actions stay POST services or become RPCs.
+- Remote calls: `let%rpc f (x : t) : u Lwt.t = ...` with `ocsigen-ppx-rpc`; typing and
+  serialisation rules are in the `eliom-client-server` skill. Prefer them to pathless
+  services for calls made by the client program.
+- Server-only services (downloads, printable pages, third-party endpoints) keep a plain
+  server-side registration and are linked with `~xhr:false`.
 
-  ```ocaml
-  let%server user_page =
-    Eliom.Service.create
-      ~path:(Eliom.Service.Path ["users"])
-      ~meth:(Eliom.Service.Get Eliom.Parameter.(int64 "id"))
-      ()
-  ```
+## State across tiers
 
-- Actions with effects (create, update, delete) are POST services, typically registered with
-  `Eliom.Registration.Action` or `Eliom.Registration.Redirection`.
-- Parameters are typed (`Eliom.Parameter.(int "page" ** string "q")`, `int64`, `suffix`).
-  Links and forms are checked against them at compile time (see `eliom-typed-markup`).
-- Remote calls: `let%rpc f (x : t) : u Lwt.t = ...` with `ocsigen-ppx-rpc`. Typing and
-  serialisation rules are in the `eliom-client-server` skill.
-- Multi-step flows can register services with a `~scope` (session or client process) so
-  that a stale URL or the back button cannot replay a step out of context.
-
-## State
-
-Choose the narrowest scope and the right store:
-
-- `Eliom.Reference.eref ~scope init` holds server-side state per scope, volatile by default,
-  persistent with `~persistent`. Scopes, broadest to narrowest: `Eliom.Common.global_scope`
-  (whole server), `site_scope` (one application), `default_group_scope` (a group of sessions,
-  typically one user), `default_session_scope` (one browser), `default_process_scope` (one
-  tab, or one mobile app instance).
+- Server-side state lives in Eliom references (scopes in `eliom-server-side`). The
+  multi-tier application adds `Eliom.Common.default_process_scope`, one client process
+  (one tab, or one mobile app instance), and Ocsigen Start adds scopes that survive login
+  and logout (`ocsigen-start`).
 - Ocsipersist (Ocsigen's key-value store, with SQLite, PostgreSQL and DBM backends) for
-  application data that must survive restarts but has no other reader (caches, counters).
-- The database (PostgreSQL through PG'OCaml in Ocsigen Start) for durable data that other
-  tools may query.
-- Ocsigen Start adds scopes that survive login and logout (see the `ocsigen-start` skill).
+  application data that must survive restarts but has no other reader (caches, counters);
+  the database (PostgreSQL through PG'OCaml in Ocsigen Start) for durable data that other
+  tools may query. Both are server-only.
+- Client-side state lives in `let%client` values for the life of the client program;
+  values the client reads on every render are pushed once at session start (`ocsigen-start`).
 
 ## Trust boundary
 
