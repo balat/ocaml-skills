@@ -9,9 +9,9 @@
 
 ## How to tell which naming a project uses
 
-- Eliom 12 and earlier, that is every opam release to date, expose one top-level module per
+- Eliom 12 and earlier expose one top-level module per
   file: `Eliom_service`, `Eliom_content`, `Eliom_registration`, and so on.
-- Eliom 13 (in development) exposes a single `Eliom` module with submodules
+- Eliom 13 exposes a single `Eliom` module with submodules
   (`Eliom.Service`), plus an `eliom-compat` library that re-exports the old names as aliases
   (`Eliom_service` is `include Eliom.Service`). Old code compiles unchanged when
   `eliom-compat.server` and `eliom-compat.client` are in the dune `libraries`.

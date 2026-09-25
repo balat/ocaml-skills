@@ -11,7 +11,7 @@ notifications, email and a project template with a demo of each feature and of t
 Toolkit widgets (`Ot`, <https://ocsigen.org/ocsigen-toolkit>). A new application starts with
 `eliom-distillery -name myapp -template os` (`os.pgocaml` with Eliom 12 and earlier). Keep
 the template's structure; the `demo_*.eliom` files are working examples of each feature and
-can be removed once read. Module names are those of Eliom 13 (in development); earlier
+can be removed once read. Module names are those of Eliom 13; earlier
 releases use `Os_session`, `Ot_spinner` (mapping in the `eliom-client-server` skill).
 
 ## Template structure

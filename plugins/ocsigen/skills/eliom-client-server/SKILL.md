@@ -9,7 +9,7 @@ license: ISC
 One `.eliom` file holds server code, client code and code compiled for both. Most bugs
 specific to Eliom come from values crossing that boundary: when they are captured, how they
 are serialised, and when the client code receiving them runs. Module names are those of
-Eliom 13 (in development); `references/module-names.md` maps them to the names used by
+Eliom 13; `references/module-names.md` maps them to the names used by
 Eliom 12 and earlier releases.
 
 ## Sections and annotations

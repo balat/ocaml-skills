@@ -12,8 +12,8 @@ section annotations decide where each definition lives. Documentation:
 <https://ocsigen.org/eliom> (manual and API) and the tutorial
 <https://ocsigen.org/tuto/latest/manual/basics>.
 
-Module names below are those of Eliom 13 (in development): `Eliom.Service`, `Eliom.Content`.
-Eliom 12 and earlier, that is every opam release to date, use `Eliom_service`,
+Module names below are those of Eliom 13: `Eliom.Service`, `Eliom.Content`.
+Eliom 12 and earlier use `Eliom_service`,
 `Eliom_content`, and so on. `../eliom-client-server/references/module-names.md` gives the
 mapping and how to tell which naming a project uses.
 

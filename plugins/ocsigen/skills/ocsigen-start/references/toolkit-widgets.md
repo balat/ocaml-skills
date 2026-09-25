@@ -1,7 +1,7 @@
 # Ocsigen Toolkit widgets
 
-Client-server widgets usable from shared sections. Module names are those of the development
-version (`Ot.Spinner`); released versions use `Ot_spinner`. The demo files are those of the
+Client-server widgets usable from shared sections. Module names are those of Eliom 13
+(`Ot.Spinner`); Eliom 12 and earlier use `Ot_spinner`. The demo files are those of the
 Ocsigen Start template (`os_template`).
 
 ## Contents

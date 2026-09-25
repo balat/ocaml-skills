@@ -1,6 +1,6 @@
 # ocaml-skills
 
-Claude Code skills for OCaml libraries and frameworks, written in a neutral tone. Plugins:
+Claude Code skills for OCaml libraries and frameworks. Plugins:
 
 | Plugin | Skills | For |
 |---|---|---|
@@ -33,8 +33,8 @@ claude --plugin-dir /path/to/ocaml-skills/plugins/ocsigen
 
 ## Module names
 
-The Ocsigen skills use the module names of Eliom 13 (in development): `Eliom.Service`,
-`Os.Session`, `Ot.Spinner`. Eliom 12 and earlier, that is every opam release to date, use
+The Ocsigen skills use the module names of Eliom 13: `Eliom.Service`,
+`Os.Session`, `Ot.Spinner`. Eliom 12 and earlier use
 `Eliom_service`, `Os_session`, `Ot_spinner`. The mapping, and how to tell which naming a
 project uses, is in
 `plugins/ocsigen/skills/eliom-client-server/references/module-names.md`.
