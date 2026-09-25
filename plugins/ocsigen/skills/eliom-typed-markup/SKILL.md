@@ -33,6 +33,27 @@ In client sections, `Eliom.Content.Html.Manip` acts on `D` nodes directly: `appe
 does the same for SVG. When a lower-level API is needed (measuring, focus, `setAttribute`),
 `To_dom.of_element node` gives the `Dom_html.element Js.t`.
 
+## Reactive, client and global nodes
+
+Besides `F` and `D`, `Eliom.Content.Html` provides:
+
+- `R`: reactive nodes. The constructors take React signals (`Eliom.Shared.React.S.t`) and
+  reactive lists (`Eliom.Shared.ReactiveData.RList.t`) where `F` takes plain values:
+  `R.node s` renders the current value of `s` and updates the DOM when it changes, `R.pcdata`
+  does the same for a string signal, and reactive attributes (`R.a_class`, ...) follow their
+  signal. Shared signals render on the server and keep updating on the client.
+- `C.node ?init cv`: a server-side node standing for a client value `cv` of type
+  `'a elt Eliom.Client_value.t`. The server sends a placeholder (`~init`, a `span` by
+  default) that the client replaces with the node it builds.
+- Global elements: `Id.create_global_elt e` keeps the element and its modified content
+  across page changes, so a chat box or a media player survives navigation with its state.
+- Named elements: `Id.new_elt_id ()` and `Id.create_named_elt ~id e` give a node a stable
+  identity; client code retrieves it later with `Id.get_element id`, even from another
+  page.
+- `Custom_data`: typed `data-*` attributes carrying an OCaml value
+  (`Custom_data.create ~name ~to_string ~of_string ()` or `create_json`, then
+  `Custom_data.attrib d v`), when a plain `a_user_data` string is not enough.
+
 ## Links and forms are typed
 
 Links (`D.a ~service:Foo_services.user_page [txt "Profile"] userid`) and forms
