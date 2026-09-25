@@ -4,7 +4,7 @@ Claude Code skills for OCaml libraries and frameworks. Plugins:
 
 | Plugin | Skills | For |
 |---|---|---|
-| `ocsigen` | `eliom-architecture`, `eliom-client-server`, `eliom-typed-markup`, `ocsigen-start`, `ocsigen-contributing` | Multi-tier web and mobile applications with Eliom, Ocsigen Start and Ocsigen Toolkit; contributions to the framework |
+| `ocsigen` | `ocsigen-overview`, `eliom-server-side`, `eliom-architecture`, `eliom-client-server`, `eliom-typed-markup`, `ocsigen-start`, `ocsigen-contributing` | What Ocsigen is and when to choose it; server-side sites and multi-tier web and mobile applications with Eliom, Ocsigen Start and Ocsigen Toolkit; contributions to the framework |
 | `lwt` | `lwt` | Code using the Lwt cooperative concurrency library, on servers and in the browser |
 
 Skills load on demand: only their name and description sit in context until a task matches.
