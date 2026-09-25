@@ -8,12 +8,12 @@ license: ISC
 
 Ocsigen (<https://ocsigen.org>) is a set of libraries for web programming in OCaml: an
 HTTP server, a compiler from OCaml to JavaScript and WebAssembly, typed HTML, cooperative
-concurrency, a web framework, and libraries for users and sessions, widgets, persistence
-and internationalisation. They are designed to be as independent of each other as
-possible and to interoperate with the rest of the OCaml ecosystem: each is used on its
-own in projects that never touch the others, and all build with the standard tools
-(opam, dune, odoc). Eliom, the framework, is where they combine into a single
-client-server program checked as a whole by the compiler.
+concurrency, a web framework, libraries for users and sessions, widgets, persistence,
+internationalisation and reactive data, and a documentation generator. They are designed
+to be as independent of each other as possible and to interoperate with the rest of the
+OCaml ecosystem: each is used on its own in projects that never touch the others, and all
+build with the standard tools (opam, dune, odoc). Eliom, the framework, is where they
+combine into a single client-server program checked as a whole by the compiler.
 
 ## Components
 
@@ -28,6 +28,8 @@ client-server program checked as a whole by the compiler.
 | Ocsigen Toolkit | client-server widgets: carousel, drawer, popups, spinners, pickers, and more |
 | ocsipersist | key-value persistence with SQLite, PostgreSQL or DBM backends |
 | ocsigen-i18n | internationalisation through a ppx and translation tables |
+| ReactiveData | reactive lists for React, used by the reactive nodes of Eliom |
+| Wodoc | documentation generator for any OCaml project, built on odoc: manuals, API pages and web sites from odoc sources, with extensions beyond plain odoc (not yet released on opam) |
 
 Each piece is usable on its own: TyXML with any HTTP server, Js_of_ocaml for any OCaml
 code in the browser, Lwt anywhere. Eliom is where they combine.
