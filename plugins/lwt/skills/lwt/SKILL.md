@@ -14,8 +14,22 @@ the rules below: a blocking call freezes the whole program, and a rejected promi
 waits on disappears unless something is set up to observe it.
 
 The `_ Lwt.t` in a signature is information: a function returning `'a Lwt.t` may take time
-or perform I/O, one returning `'a` does not. Keep that signal honest: do not call
+or perform I/O, one returning `'a` does not. Effect-based libraries do not express this in
+types; with Lwt the compiler checks it. Keep that signal honest: do not call
 `Lwt_main.run` inside library code, and do not hide a promise behind `unit`.
+
+## Why Lwt
+
+Lwt is a cooperative concurrency library for OCaml 4.14 and 5. Compared with effect-based
+libraries such as Eio:
+
+- **Typed asynchrony**: a function that may suspend returns an `'a Lwt.t`, so the compiler
+  shows and checks where waiting can happen; the price is the monadic style
+- **Runs everywhere OCaml runs**: native and bytecode, js_of_ocaml and wasm_of_ocaml in the
+  browser, MirageOS unikernels, OCaml 4.14 as well as 5
+- **The largest ecosystem**: Ocsigen, Dream, cohttp-lwt, Irmin, MirageOS and most opam
+  packages with a concurrency dependency are built on Lwt
+- **Interoperation**: `Lwt_eio` runs Lwt libraries inside an Eio program, and the reverse
 
 ## Binding syntax
 
